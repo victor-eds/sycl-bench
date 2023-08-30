@@ -1,0 +1,58 @@
+#!/bin/bash
+#SBATCH -N 1
+#SBATCH --begin 22:00:00
+#SBATCH --exclusive
+#SBATCH --partition intel
+#SBATCH --output=output-%x.%j.out
+#SBATCH --error=output-%x.%j.err
+
+export SOURCEDIR=$PWD
+export BASEDIR=/tmp/$USER
+export WORKDIR=$BASEDIR/syclbench
+
+module load cmake
+
+mkdir -p ~/sycl-bench-res
+mkdir -p $WORKDIR
+cd $WORKDIR
+
+cp ~/dpcpp/dpcpp-mlir.tar.bz2 .
+tar xf dpcpp-mlir.tar.bz2
+
+export DPCPP_COMPILER=$WORKDIR/dpcpp-mlir/bin/clang++
+export LD_LIBRARY_PATH=$WORKDIR/dpcpp-mlir/lib:$LD_LIBRARY_PATH
+DATE=`date '+%Y-%m-%d'`
+
+RUN_NB=30
+
+## Test MLIR
+
+export NAME=mlir
+export TESTDIR=$WORKDIR/$NAME
+cd $WORKDIR
+mkdir $TESTDIR
+cd $TESTDIR
+
+cmake -DSYCL_IMPL=LLVM-MLIR -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TESTDIR/install -DCMAKE_CXX_COMPILER=$DPCPP_COMPILER ~/sycl-bench/
+make -j 6 -k install
+cd $TESTDIR/install/bin/benchmarks
+export ONEAPI_DEVICE_SELECTOR="opencl:*"
+python3 $TESTDIR/install/bin/run-suite --no-bandwidth-test -r $RUN_NB -o ~/sycl-bench-res/$NAME-opencl-${DATE}.csv  -name $NAME gpu
+
+# ------
+
+export NAME=stdsycl
+export TESTDIR=$WORKDIR/$NAME
+cd $WORKDIR
+mkdir $TESTDIR
+cd $TESTDIR
+
+cmake -DSYCL_IMPL=LLVM -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TESTDIR/install -DCMAKE_CXX_COMPILER=$DPCPP_COMPILER ~/sycl-bench/
+make -j 6 -k install
+cd $TESTDIR/install/bin/benchmarks
+export ONEAPI_DEVICE_SELECTOR="opencl:*"
+python3 $TESTDIR/install/bin/run-suite --no-bandwidth-test -r $RUN_NB -o ~/sycl-bench-res/$NAME-opencl-${DATE}.csv  -name $NAME gpu
+
+
+cd ~/
+rm -rf $BASEDIR
