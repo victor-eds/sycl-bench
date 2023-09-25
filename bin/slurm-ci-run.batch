@@ -7,6 +7,7 @@
 
 WORKDIR=$HOME/WD/
 export LD_LIBRARY_PATH=$WORKDIR/sycl_linux_default/lib:$LD_LIBRARY_PATH
+export ONEAPI_DEVICE_SELECTOR=opencl:gpu
 
 DATE=$(date '+%Y-%m-%d')
 
