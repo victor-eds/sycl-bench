@@ -51,8 +51,7 @@ popd # $DPCPP_REPO_DIR
 echo "Unpack and repacks artifacts using gzip"
 repack_artifact() {
     echo "Repacking artifact $1"
-    tar -I zstd -xf $1/llvm_sycl.tar.zst -C $1
-    tar -I gzip -cf llvm_sycl.tar.gz -C $1 bin include lib share
+    zstdcat $1/llvm_sycl.tar.zst | gzip > $1/llvm_sycl.tar.gz
 }
 
 DPCPP_ARTIFACT_DIR=sycl_linux_default
@@ -72,7 +71,7 @@ pack_sycl_bench() {
           -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang \
           -DSYCL_IMPL=$1 -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR
     cmake --build build --target install
-    echo "Replacing bin/ruin-suite with MLIR version"
+    echo "Replacing bin/run-suite with MLIR version"
     cp -f $SYCL_BENCH_DIR/bin/run-suite $INSTALL_DIR/bin
     tar -I gzip -cf $ARTIFACT_FILENAME -C $INSTALL_DIR .
     rm -rf build

@@ -1,6 +1,6 @@
 #! /bin/bash -e
 
-WORKDIR=$PWD/WD
+WORKDIR=$HOME/WD
 
 echo "Cleaning workspace"
 rm -rf $WORKDIR
