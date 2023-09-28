@@ -41,6 +41,21 @@ Run individual tests as such:
 $ ./arith --device=cpu --output=output.csv
 ```
 
+## Weekly CI
+
+CI is run weekly. CI is run on an Intel Arc A770 GPU on slurm. It includes functional and performance regression testing. [weekly-ci.sh](./bin/weekly-ci.sh) starts the workflow.
+
+CI results are copied back to the directory pointed by `$SYCL_BENCH_CI_RESULTS_DIR`.
+
+### Dependencies
+
+In order to weekly CI, the launching machine must provide the following dependencies:
+
+- [gh](https://cli.github.com/)
+- [gzip](https://packages.ubuntu.com/jammy/gzip)
+- [rsync](https://packages.ubuntu.com/jammy/rsync)
+- [zstd](https://packages.ubuntu.com/jammy/zstd)
+
 ## Attribution
 If you use SYCL-Bench, please cite the following papers:
 
