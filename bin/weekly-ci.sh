@@ -94,7 +94,7 @@ rsync -z \
       $SYCL_BENCH_DIR/bin/slurm-run.sh \
       sycl-bench-LLVM.tar.gz \
       sycl-bench-LLVM-MLIR.tar.gz \
-      llvm_sycl.tar.gz \
+      $DPCPP_ARTIFACT_DIR/llvm_sycl.tar.gz \
       $SLURM_DESTINATION:~
 
 echo "Running benchmarks on slurm machine"
