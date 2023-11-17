@@ -77,7 +77,10 @@ pack_sycl_bench() {
     mkdir -p $INSTALL_DIR
     cmake $SYCL_BENCH_DIR -GNinja -Bbuild \
           -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang \
-          -DSYCL_IMPL=$1 -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR
+          -DSYCL_IMPL=$1 -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR \
+          # Needed to keep new ABI breaking sycl::vec representation.
+          # Drop when ABI break is default behaviour.
+          -DCMAKE_SYCL_FLAGS="-fpreview-breaking-changes"
     cmake --build build --target install
     echo "Replacing bin/run-suite with MLIR version"
     cp -f $SYCL_BENCH_DIR/bin/run-suite $INSTALL_DIR/bin
